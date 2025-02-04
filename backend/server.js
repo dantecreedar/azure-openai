@@ -2,20 +2,17 @@
 const express = require("express");
 const { AzureOpenAI } = require("openai");
 const cors = require("cors");
-
+require("dotenv").config();
 const app = express();
+
 app.use(express.json());
 app.use(cors());
 
-const azureOpenAIEndpoint = "https://projectsvai7540700321.openai.azure.com/";
-const apiKey =
-  "FjwGfvHBDitDcoW9VmvYmxdBDXDjf5kTHO937KeyQ5ucmQBCeQRYJQQJ99BAACYeBjFXJ3w3AAABACOG0MVc"; // Reemplaza con tu clave de API
-const deployment = "gpt-4"; // Nombre del modelo
-const apiVersion = "2024-04-01-preview"; // Versión de la API
+const apiVersion = "2024-04-01-preview";
 
 const client = new AzureOpenAI({
-  endpoint: azureOpenAIEndpoint,
-  apiKey: apiKey,
+  endpoint: process.env.AZURE_OPENAI_ENDPOINT,
+  apiKey: process.env.AZURE_OPENAI_API_KEY,
   apiVersion: apiVersion,
 });
 
@@ -47,7 +44,7 @@ app.post("/chat", async (req, res) => {
     // Enviar la solicitud a Azure OpenAI
     const result = await client.chat.completions.create({
       messages: messages,
-      model: deployment,
+      model: process.env.AZURE_DEPLOYMENT_NAME,
     });
 
     // Devolver la respuesta del asistente
