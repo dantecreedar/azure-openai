@@ -12,7 +12,7 @@ const ChatAgent1: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh">
       {/* Contenedor del chat */}
-      <div className="w-full bg-white rounded-lg p-6 flex flex-col h-[50vh]">
+      <div className="w-full bg-[#403050] rounded-lg p-6 flex flex-col h-[50vh]">
         <h2 className="text-xl font-bold mb-4 text-center">
           Chat Agente 1 (Ventas)
         </h2>
@@ -21,7 +21,7 @@ const ChatAgent1: React.FC = () => {
 
       {/* Mostramos las notas guardadas, si lo deseas */}
       {notes.length > 0 && (
-        <div className="w-full max-w-xl mt-6 bg-white shadow-md rounded-lg p-4">
+        <div className="w-full max-w-xl mt-6 bg-[#403050] shadow-md rounded-lg p-4">
           <h3 className="text-lg font-semibold mb-2">Notas guardadas:</h3>
           <ul className="list-disc list-inside">
             {notes.map((note, index) => (
