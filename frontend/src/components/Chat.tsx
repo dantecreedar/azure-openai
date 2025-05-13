@@ -14,12 +14,8 @@ import {
   BsBell,
   BsShieldCheck,
   BsCloudUpload,
-  BsX,
 } from "react-icons/bs";
-import React, { useState, useEffect, useRef } from "react";
-// Añadir esta importación
-import Joyride, { CallBackProps, STATUS } from "react-joyride";
-// Resto de las importaciones...
+import Joyride, { CallBackProps } from "react-joyride";
 
 type Message = {
   role: "user" | "assistant";
@@ -33,10 +29,14 @@ type ChatSession = {
   lastUpdated: Date;
 };
 
+interface ChatProps {
+  onAddNote: (note: string) => void;
+}
+
 const STORAGE_KEY = "chat_sessions";
 const CURRENT_CHAT_KEY = "current_chat";
 
-const Chat: React.FC = () => {
+const Chat: React.FC<ChatProps> = () => {
   const [input, setInput] = useState<string>("");
   const [chats, setChats] = useState<ChatSession[]>([]);
   const [currentChat, setCurrentChat] = useState<ChatSession>({
@@ -48,7 +48,7 @@ const Chat: React.FC = () => {
   const [runTour, setRunTour] = useState<boolean>(false);
   const [tourSteps, setTourSteps] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [] = useState<string | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const [isChatStarted, setIsChatStarted] = useState<boolean>(false);
   const [activeSection, setActiveSection] = useState<"chats" | "config">(
@@ -159,7 +159,7 @@ const Chat: React.FC = () => {
   // Añade esta función dentro del componente
   const handleJoyrideCallback = (data: CallBackProps) => {
     const { status } = data;
-    if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
+    if (["finished", "skipped"].includes(status)) {
       setRunTour(false);
     }
   };
@@ -277,7 +277,7 @@ const Chat: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:3001/chat", {
+      const response = await fetch("https://chat-mncwxshnjq-uc.a.run.app/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: updatedChat.messages }),
@@ -307,7 +307,7 @@ const Chat: React.FC = () => {
       // Save current chat to localStorage
       localStorage.setItem(CURRENT_CHAT_KEY, JSON.stringify(finalUpdatedChat));
     } catch {
-      setError("Failed to send message. Try again.");
+      
     } finally {
       setIsLoading(false);
     }

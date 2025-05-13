@@ -7,21 +7,18 @@ type Message = {
   content: string;
 };
 
-interface ChatProps {
-  onAddNote: (note: string) => void;
-}
-
-const ChatAgent2: React.FC<ChatProps> = ({ onAddNote }) => {
+const ChatAgent2: React.FC = () => {
   const [input, setInput] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState<boolean>(false);
-
+ /*  const [notes, setNotes] = useState<string[]>([]);
+ */
   // Función para verificar la conexión a la API
   const checkConnection = async () => {
     try {
-      const response = await fetch("http://localhost:3001/chat", {
+      const response = await fetch("https://chat-mncwxshnjq-uc.a.run.app/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -61,7 +58,7 @@ const ChatAgent2: React.FC<ChatProps> = ({ onAddNote }) => {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:3001/chat", {
+      const response = await fetch("https://chat-mncwxshnjq-uc.a.run.app/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -91,10 +88,10 @@ const ChatAgent2: React.FC<ChatProps> = ({ onAddNote }) => {
     }
   };
 
-  const handleAddNote = () => {
-    if (input.trim() !== "") {
-      onAddNote(input);
-      setInput("");
+  const handleAddNote = (note: string) => {
+    if (note.trim() !== "") {
+     /*  setNotes((prev: string[]) => [...prev, note]);
+    } */
     }
   };
 
@@ -137,7 +134,7 @@ const ChatAgent2: React.FC<ChatProps> = ({ onAddNote }) => {
             {isLoading ? "Enviando..." : "Enviar"}
           </button>
           <button
-            onClick={handleAddNote}
+            onClick={() => handleAddNote(input)}
             className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
           >
             Guardar como nota
@@ -157,3 +154,4 @@ const ChatAgent2: React.FC<ChatProps> = ({ onAddNote }) => {
 };
 
 export default ChatAgent2;
+

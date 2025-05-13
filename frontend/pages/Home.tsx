@@ -1,17 +1,12 @@
 // src/pages/Home.tsx
 import React, { useState } from "react";
-import { FaPlus } from "react-icons/fa";
+
 import Chat from "../src/components/Chat";
 
 const Home: React.FC = () => {
-  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
-  const [notes, setNotes] = useState<string[]>([]);
+  const [] = useState<number | null>(null);
+  const [notes] = useState<string[]>([]);
 
-  const handleAddNote = (note: string) => {
-    if (note.trim() !== "") {
-      setNotes((prev) => [...prev, note]);
-    }
-  };
 
   return (
     <div className="w-full h-full flex flex-col">
@@ -41,7 +36,9 @@ const Home: React.FC = () => {
 
         {/* Chat (Ocupará toda la altura disponible) */}
         <div className="w-full h-full max-w-2xl bg-transparent rounded-md p-6">
-          <Chat onAddNote={handleAddNote} />
+          <Chat onAddNote={function (): void {
+            throw new Error("Function not implemented.");
+          } } />
         </div>
       </section>
     </div>

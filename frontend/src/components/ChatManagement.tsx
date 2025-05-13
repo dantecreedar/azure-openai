@@ -29,7 +29,7 @@ interface ChatManagementProps {
   currentChat: ChatSession;
   setCurrentChat: (chat: ChatSession) => void;
   chats: ChatSession[];
-  setChats: (chats: ChatSession[]) => void;
+  setChats: (chats: ChatSession[] | ((prev: ChatSession[]) => ChatSession[])) => void;
   saveCurrentChat: (showNotification?: boolean) => void;
 }
 
@@ -44,8 +44,6 @@ const ChatManagement: React.FC<ChatManagementProps> = ({
   setChats,
   saveCurrentChat
 }) => {
-  const [showDeletedMessages, setShowDeletedMessages] = useState<boolean>(false);
-  const [showArchivedChats, setShowArchivedChats] = useState<boolean>(false);
   const [archivedChats, setArchivedChats] = useState<ChatSession[]>([]);
   const [activeTab, setActiveTab] = useState<"pinned" | "archived" | "deleted">("pinned");
   
@@ -74,32 +72,6 @@ const ChatManagement: React.FC<ChatManagementProps> = ({
     }
   }, [archivedChats]);
 
-  // Archive a chat
-  const archiveChat = (chatId: number) => {
-    // Find the chat in the current chats
-    const chatToArchive = chats.find(chat => chat.id === chatId);
-    if (!chatToArchive) return;
-    
-    // Add isArchived flag
-    const archivedChat = { ...chatToArchive, isArchived: true };
-    
-    // Remove from current chats
-    const updatedChats = chats.filter(chat => chat.id !== chatId);
-    setChats(updatedChats);
-    
-    // Add to archived chats
-    setArchivedChats(prev => [archivedChat, ...prev]);
-    
-    // If the current chat is being archived, reset to a new chat
-    if (currentChat.id === chatId) {
-      const newChat = { id: Date.now(), messages: [], name: "", lastUpdated: new Date() };
-      setCurrentChat(newChat);
-      
-      // Update localStorage
-      localStorage.setItem("chat_sessions", JSON.stringify(updatedChats));
-    }
-  };
-
   // Unarchive a chat
   const unarchiveChat = (chatId: number) => {
     // Find the chat in archived chats
@@ -114,44 +86,11 @@ const ChatManagement: React.FC<ChatManagementProps> = ({
     setArchivedChats(updatedArchivedChats);
     
     // Add to current chats
-    setChats(prev => [unarchived, ...prev]);
+    setChats((prev: ChatSession[]) => [unarchived, ...prev]);
     
     // Update localStorage
     localStorage.setItem(LOCAL_STORAGE_ARCHIVED, JSON.stringify(updatedArchivedChats));
     localStorage.setItem("chat_sessions", JSON.stringify([unarchived, ...chats]));
-  };
-
-  // Pin a message
-  const pinMessage = (messageId: string) => {
-    if (!currentChat) return;
-    
-    // Find the message in current chat
-    const messageIndex = currentChat.messages.findIndex(msg => msg.id === messageId);
-    if (messageIndex === -1) return;
-    
-    // Update the message with isPinned flag
-    const updatedMessages = [...currentChat.messages];
-    updatedMessages[messageIndex] = { 
-      ...updatedMessages[messageIndex], 
-      isPinned: true 
-    };
-    
-    // Update pinnedMessages array
-    const pinnedMessages = currentChat.pinnedMessages || [];
-    const updatedPinnedMessages = [...pinnedMessages, messageId];
-    
-    // Update current chat
-    const updatedChat = {
-      ...currentChat,
-      messages: updatedMessages,
-      pinnedMessages: updatedPinnedMessages
-    };
-    
-    setCurrentChat(updatedChat);
-    saveCurrentChat(false);
-    
-    // Also store in localStorage
-    localStorage.setItem(LOCAL_STORAGE_PINNED, JSON.stringify(updatedPinnedMessages));
   };
 
   // Unpin a message
@@ -184,41 +123,6 @@ const ChatManagement: React.FC<ChatManagementProps> = ({
     
     // Also update in localStorage
     localStorage.setItem(LOCAL_STORAGE_PINNED, JSON.stringify(updatedPinnedMessages));
-  };
-
-  // Delete a message (move to trash)
-  const deleteMessage = (messageId: string) => {
-    if (!currentChat) return;
-    
-    // Find the message in current chat
-    const messageIndex = currentChat.messages.findIndex(msg => msg.id === messageId);
-    if (messageIndex === -1) return;
-    
-    // Get the message to delete
-    const messageToDelete = { 
-      ...currentChat.messages[messageIndex], 
-      isDeleted: true 
-    };
-    
-    // Remove message from current messages
-    const updatedMessages = currentChat.messages.filter(msg => msg.id !== messageId);
-    
-    // Add to deletedMessages array
-    const deletedMessages = currentChat.deletedMessages || [];
-    const updatedDeletedMessages = [...deletedMessages, messageToDelete];
-    
-    // Update current chat
-    const updatedChat = {
-      ...currentChat,
-      messages: updatedMessages,
-      deletedMessages: updatedDeletedMessages
-    };
-    
-    setCurrentChat(updatedChat);
-    saveCurrentChat(false);
-    
-    // Also store in localStorage
-    localStorage.setItem(LOCAL_STORAGE_DELETED, JSON.stringify(updatedDeletedMessages));
   };
 
   // Restore a deleted message
